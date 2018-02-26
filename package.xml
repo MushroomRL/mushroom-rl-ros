@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <name>mushroom_ros</name>
+  <version>1.0.0</version>
+  <description>
+    ROS environment interfaces for mushroom (Real robot/gazebo)
+  </description>
+
+  <maintainer email="davide.tateo@polimi.it">Davide Tateo</maintainer>
+  <license>MIT</license>
+
+  <author>Davide Tateo</author>
+  <author>Carlo D'Eramo</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

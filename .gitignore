@@ -99,3 +99,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# PyCharm
+.idea/
+src/mushroom_ros/.idea/
+src/.idea/
