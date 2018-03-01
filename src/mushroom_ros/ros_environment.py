@@ -3,9 +3,7 @@ from mushroom.environments import Environment
 
 
 class ROSEnvironment(Environment):
-    def __init__(self, name, mdp_info, hz, **kwargs):
-        rospy.init_node(name, **kwargs)
-
+    def __init__(self, name, mdp_info, hz):
         self._r = rospy.Rate(hz)
         self._state_ready = False
         self._state = None
