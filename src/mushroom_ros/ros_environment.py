@@ -4,6 +4,9 @@ from mushroom.environments import Environment
 
 class ROSEnvironment(Environment):
     def __init__(self, name, mdp_info, hz):
+        rospy.init_node(name)
+        rospy.loginfo('Started ' + name)
+
         self._r = rospy.Rate(hz)
         self._state_ready = False
         self._state = None
@@ -17,15 +20,14 @@ class ROSEnvironment(Environment):
         while not self._state_ready and not rospy.is_shutdown():
             self._r.sleep()
 
-        self._state = self.get_state()
-        self._r.reset()
+        self._state, _ = self.get_state()
 
         return self._state
 
     def step(self, action):
         while not self._state_ready and not rospy.is_shutdown():
             self.publish_action(action)
-            self.r.sleep()
+            self._r.sleep()
 
         next_state, absorbing = self.get_state()
         reward = self.get_reward(self._state, action, next_state)
@@ -74,7 +76,8 @@ class ROSEnvironment(Environment):
         Must be implemented.
 
         Returns:
-            The current state of the environment (e.g. the robot state).
+            The current state of the environment (e.g. the robot state) and
+            the absorbing flag.
 
         """
         raise NotImplementedError

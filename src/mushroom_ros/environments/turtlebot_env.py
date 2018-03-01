@@ -11,7 +11,7 @@ from gazebo_msgs.msg import ModelStates
 
 
 class TurtlebotGazebo(GazeboEnvironment):
-    def __init__(self):
+    def __init__(self, **kwargs):
 
         # Define environment properties
         high_x = np.array([5.0, 5.0, np.pi])
@@ -30,8 +30,7 @@ class TurtlebotGazebo(GazeboEnvironment):
 
         hz = 50.0
 
-        super(TurtlebotGazebo, self).__init__('turtlebot_gazebo', mdp_info, hz)
-
+        super(TurtlebotGazebo, self).__init__('turtlebot_gazebo', mdp_info, hz, **kwargs)
 
         # subscribe to /cmd_vel topic to publish the setpoint
         self._pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
@@ -41,7 +40,6 @@ class TurtlebotGazebo(GazeboEnvironment):
         self._pose = None
 
     def _state_callback(self, msg):
-
         try:
             index = msg.name.index('turtlebot3_burger')
             self._pose = msg.pose[index]
@@ -58,8 +56,8 @@ class TurtlebotGazebo(GazeboEnvironment):
         self._pub.publish(msg)
 
     def get_state(self):
-        x = self.pose.position.x
-        y = self.pose.position.y
+        x = self._pose.position.x
+        y = self._pose.position.y
 
         quaternion = (
             self._pose.orientation.x,
@@ -70,25 +68,11 @@ class TurtlebotGazebo(GazeboEnvironment):
 
         yaw = euler[2]
 
-        print x, y, yaw
-
         self._state_ready = False
 
-        return np.array([x, y, yaw])
+        return np.array([x, y, yaw]), False
 
     def get_reward(self, state, action, next_state):
-        """
-        This method contains the reward function implementation.
-        Must be implemented.
-
-        Args:
-            state (np.ndarray): the previous state.
-            action (np.ndarray): the action taken.
-            next_state (np.ndarray): the state reached.
-
-        Returns:
-            The value of the reward for the specified transition.
-
-        """
-        return 0.0
+        target = np.array([2.0, 0.0, 0.0])
+        return -(np.linalg.norm(target-next_state)+np.linalg.norm(action))
 
