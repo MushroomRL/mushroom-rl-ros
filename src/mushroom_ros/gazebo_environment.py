@@ -36,13 +36,13 @@ class GazeboEnvironment(ROSEnvironment):
         if self._simulation_running:
             self.stop()
 
-        rospy.loginfo('Starting simulation')
+        print 'Starting simulation'
 
         self._resume_service()
         self._simulation_running = True
 
     def stop(self):
-        rospy.loginfo('Stopping simulation')
+        print 'Stopping simulation'
         self._pause_service()
         self._reset_service()
         self._simulation_running = False

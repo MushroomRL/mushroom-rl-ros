@@ -7,7 +7,7 @@ class ROSEnvironment(Environment):
         rospy.init_node(name)
         rospy.loginfo('Started ' + name)
 
-        self._r = rospy.Rate(hz)
+        self._r = rospy.Rate(hz, reset=True)
         self._state_ready = False
         self._state = None
 
@@ -15,7 +15,9 @@ class ROSEnvironment(Environment):
         super(ROSEnvironment, self).__init__(mdp_info)
 
     def reset(self, state=None):
+        print 'reset'
         self.start()
+        self._r.last_time = rospy.Time()
 
         while not self._state_ready and not rospy.is_shutdown():
             self._r.sleep()
@@ -25,6 +27,7 @@ class ROSEnvironment(Environment):
         return self._state
 
     def step(self, action):
+        print 'step'
         while not self._state_ready and not rospy.is_shutdown():
             self.publish_action(action)
             self._r.sleep()

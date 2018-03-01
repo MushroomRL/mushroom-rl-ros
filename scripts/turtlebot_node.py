@@ -18,7 +18,7 @@ from mushroom.utils.parameters import Parameter, AdaptiveParameter
 # Learning parameters
 n_runs = 4
 n_iterations = 10
-ep_per_run = 1
+ep_per_run = 3
 
 # Environment
 mdp = TurtlebotGazebo()
@@ -53,14 +53,17 @@ agent = REINFORCE(policy, mdp.info, agent_params, phi)
 
 # Train
 core = Core(agent, mdp)
-
+print 'Initial evaluation'
 dataset_eval = core.evaluate(n_episodes=ep_per_run)
 J = compute_J(dataset_eval, gamma=mdp.info.gamma)
 print('J at start : ' + str(np.mean(J)))
 
 for i in xrange(n_runs):
+    print 'iteration', i
+    print 'learn'
     core.learn(n_episodes=n_iterations * ep_per_run,
-               n_episodes_per_fit=ep_per_run)
+               n_episodes_per_fit=ep_per_run, quiet=True)
+    print 'evaluate'
     dataset_eval = core.evaluate(n_episodes=ep_per_run)
     J = compute_J(dataset_eval, gamma=mdp.info.gamma)
     print('J at iteration ' + str(i) + ': ' + str(np.mean(J)))
