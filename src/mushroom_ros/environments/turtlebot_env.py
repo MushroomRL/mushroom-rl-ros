@@ -7,7 +7,7 @@ from mushroom.environments import MDPInfo
 from mushroom.utils import spaces
 
 from geometry_msgs.msg import Twist
-from gazebo_msgs.msg import ModelStates
+from gazebo_msgs.srv import GetModelState
 
 
 class TurtlebotGazebo(GazeboEnvironment):
@@ -36,16 +36,9 @@ class TurtlebotGazebo(GazeboEnvironment):
         self._pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
         # subscribe to /gazebo/model_states to get the position of the turtlebot
-        self._sub = rospy.Subscriber('/gazebo/model_states', ModelStates, self._state_callback)
-        self._pose = None
-
-    def _state_callback(self, msg):
-        try:
-            index = msg.name.index('turtlebot3_burger')
-            self._pose = msg.pose[index]
-            self._state_ready = True
-        except ValueError:
-            pass
+        model_state_service_name = '/gazebo/get_model_state'
+        rospy.wait_for_service(model_state_service_name)
+        self._model_state_service = rospy.ServiceProxy(model_state_service_name, GetModelState)
 
     def publish_action(self, action):
         msg = Twist()
@@ -56,23 +49,26 @@ class TurtlebotGazebo(GazeboEnvironment):
         self._pub.publish(msg)
 
     def get_state(self):
-        x = self._pose.position.x
-        y = self._pose.position.y
+        ok = False
+        while not ok:
+            res = self._model_state_service('turtlebot3_burger', '')
+            ok = res.success
+
+        x = res.pose.position.x
+        y = res.pose.position.y
 
         quaternion = (
-            self._pose.orientation.x,
-            self._pose.orientation.y,
-            self._pose.orientation.z,
-            self._pose.orientation.w)
+            res.pose.orientation.x,
+            res.pose.orientation.y,
+            res.pose.orientation.z,
+            res.pose.orientation.w)
         euler = tf.transformations.euler_from_quaternion(quaternion)
 
         yaw = euler[2]
-
-        self._state_ready = False
 
         return np.array([x, y, yaw]), False
 
     def get_reward(self, state, action, next_state):
         target = np.array([2.0, 0.0, 0.0])
-        return -(np.linalg.norm(target-next_state)+np.linalg.norm(action))
+        return -np.linalg.norm(target-next_state)
 

@@ -24,7 +24,7 @@ ep_per_run = 3
 mdp = TurtlebotGazebo()
 
 # Policy
-tensor_list = gaussian_tensor.generate([20, 20, 6],
+tensor_list = gaussian_tensor.generate([10, 10, 6],
                                        [[-5.0, 5.0],
                                         [-5.0, 5.0],
                                         [-np.pi, np.pi]])
@@ -42,6 +42,7 @@ approximator = Regressor(LinearApproximator, input_shape=input_shape,
 
 sigma = np.eye(2)*1e-1
 policy = MultivariateGaussianPolicy(mu=approximator, sigma=sigma)
+
 
 # Agent
 learning_rate = AdaptiveParameter(value=.1)
@@ -62,7 +63,7 @@ for i in xrange(n_runs):
     print 'iteration', i
     print 'learn'
     core.learn(n_episodes=n_iterations * ep_per_run,
-               n_episodes_per_fit=ep_per_run, quiet=True)
+               n_episodes_per_fit=ep_per_run)
     print 'evaluate'
     dataset_eval = core.evaluate(n_episodes=ep_per_run)
     J = compute_J(dataset_eval, gamma=mdp.info.gamma)
