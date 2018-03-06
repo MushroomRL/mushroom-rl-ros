@@ -4,7 +4,7 @@ import numpy as np
 
 from mushroom_ros.environments import TurtlebotGazebo
 
-from mushroom_ros.core import Core
+from mushroom.core import Core
 from mushroom.algorithms.policy_search import REINFORCE
 from mushroom.approximators.parametric import LinearApproximator
 from mushroom.approximators.regressor import Regressor
