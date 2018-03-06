@@ -4,7 +4,7 @@ import numpy as np
 
 from mushroom_ros.environments import TurtlebotGazebo
 
-from mushroom.core import Core
+from mushroom_ros.core import Core
 from mushroom.algorithms.policy_search import REINFORCE
 from mushroom.approximators.parametric import LinearApproximator
 from mushroom.approximators.regressor import Regressor
@@ -45,7 +45,7 @@ policy = MultivariateGaussianPolicy(mu=approximator, sigma=sigma)
 
 
 # Agent
-learning_rate = AdaptiveParameter(value=.1)
+learning_rate = AdaptiveParameter(value=5)
 algorithm_params = dict(learning_rate=learning_rate)
 fit_params = dict()
 agent_params = {'algorithm_params': algorithm_params,
@@ -68,4 +68,6 @@ for i in xrange(n_runs):
     dataset_eval = core.evaluate(n_episodes=ep_per_run)
     J = compute_J(dataset_eval, gamma=mdp.info.gamma)
     print('J at iteration ' + str(i) + ': ' + str(np.mean(J)))
+    
+mdp.stop()
 

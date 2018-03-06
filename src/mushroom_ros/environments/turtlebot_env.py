@@ -5,9 +5,13 @@ import rospy
 from mushroom_ros import GazeboEnvironment
 from mushroom.environments import MDPInfo
 from mushroom.utils import spaces
+from mushroom.utils.angles_utils import normalize_angle
 
 from geometry_msgs.msg import Twist
 from gazebo_msgs.srv import GetModelState
+
+from tqdm import tqdm
+tqdm.monitor_interval = 0
 
 
 class TurtlebotGazebo(GazeboEnvironment):
@@ -24,11 +28,11 @@ class TurtlebotGazebo(GazeboEnvironment):
         action_space = spaces.Box(low=low_u, high=high_u)
 
         gamma = 0.9
-        horizon = 2000
+        horizon = 400
 
         mdp_info = MDPInfo(observation_space, action_space, gamma, horizon)
 
-        hz = 50.0
+        hz = 10.0
 
         super(TurtlebotGazebo, self).__init__('turtlebot_gazebo', mdp_info, hz, **kwargs)
 
@@ -64,7 +68,7 @@ class TurtlebotGazebo(GazeboEnvironment):
             res.pose.orientation.w)
         euler = tf.transformations.euler_from_quaternion(quaternion)
 
-        yaw = euler[2]
+        yaw = normalize_angle(euler[2])
 
         return np.array([x, y, yaw]), False
 
