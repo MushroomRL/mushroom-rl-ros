@@ -48,13 +48,13 @@ class GazeboEnvironment(ROSEnvironment):
         if self._simulation_running:
             self.stop()
 
-        self.start_extra()
         self._resume_service()
+        self.start_extra()
         self._simulation_running = True
 
     def stop(self):
-        self._pause_service()
         self.stop_extra()
+        self._pause_service()
         self._reset_service()
         self._simulation_running = False
 
