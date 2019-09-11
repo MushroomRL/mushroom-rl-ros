@@ -8,6 +8,7 @@ class ROSEnvironment(Environment):
         rospy.loginfo('Started ' + name)
 
         self._r = rospy.Rate(hz, reset=True)
+        self.hz = hz
         self._state = None
 
         self.__name__ = name
@@ -23,7 +24,7 @@ class ROSEnvironment(Environment):
         self.publish_action(action)
         self._r.sleep()
         next_state, absorbing = self.get_state()
-        reward = self.get_reward(self._state, action, next_state)
+        reward = self.get_reward(self._state, action, next_state, absorbing)
 
         self._state = next_state
 
@@ -75,7 +76,7 @@ class ROSEnvironment(Environment):
         """
         raise NotImplementedError
 
-    def get_reward(self, state, action, next_state):
+    def get_reward(self, state, action, next_state, absorbing):
         """
         This method contains the reward function implementation.
         Must be implemented.

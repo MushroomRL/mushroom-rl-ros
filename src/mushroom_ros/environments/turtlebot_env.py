@@ -72,7 +72,7 @@ class TurtlebotGazebo(GazeboEnvironment):
 
         return np.array([x, y, yaw]), False
 
-    def get_reward(self, state, action, next_state):
+    def get_reward(self, state, action, next_state, absorbing):
         target = np.array([2.0, 0.0, 0.0])
         return -np.linalg.norm(target-next_state)
 
