@@ -1,5 +1,5 @@
 import rospy
-from ros_environment import ROSEnvironment
+from .ros_environment import ROSEnvironment
 from std_srvs.srv import Empty
 from gazebo_msgs.srv import GetModelState, SetModelState
 from gazebo_msgs.msg import ModelState
