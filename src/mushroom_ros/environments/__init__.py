@@ -1,3 +1,3 @@
-from turtlebot_env import TurtlebotGazebo
+from .turtlebot_env import TurtlebotGazebo
 
 __all__ = ['TurtlebotGazebo']

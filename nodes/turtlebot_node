@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import numpy as np
 
@@ -10,9 +10,9 @@ from mushroom.approximators.parametric import LinearApproximator
 from mushroom.approximators.regressor import Regressor
 from mushroom.features.features import Features
 from mushroom.features.tensors import gaussian_tensor
-from mushroom.policy import GaussianPolicy, MultivariateGaussianPolicy, MultivariateDiagonalGaussianPolicy
+from mushroom.policy import MultivariateGaussianPolicy
 from mushroom.utils.dataset import compute_J
-from mushroom.utils.parameters import Parameter, AdaptiveParameter
+from mushroom.utils.parameters import AdaptiveParameter
 
 
 # Learning parameters
@@ -54,17 +54,17 @@ agent = REINFORCE(policy, mdp.info, agent_params, phi)
 
 # Train
 core = Core(agent, mdp)
-print 'Initial evaluation'
+print('Initial evaluation')
 dataset_eval = core.evaluate(n_episodes=ep_per_run)
 J = compute_J(dataset_eval, gamma=mdp.info.gamma)
 print('J at start : ' + str(np.mean(J)))
 
-for i in xrange(n_runs):
-    print 'iteration', i
-    print 'learn'
+for i in range(n_runs):
+    print('iteration', i)
+    print('learn')
     core.learn(n_episodes=n_iterations * ep_per_run,
                n_episodes_per_fit=ep_per_run)
-    print 'evaluate'
+    print('evaluate')
     dataset_eval = core.evaluate(n_episodes=ep_per_run)
     J = compute_J(dataset_eval, gamma=mdp.info.gamma)
     print('J at iteration ' + str(i) + ': ' + str(np.mean(J)))

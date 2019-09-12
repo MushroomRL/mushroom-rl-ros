@@ -5,7 +5,11 @@ catkin_package()
 
 catkin_python_setup()
 
-catkin_install_python(PROGRAMS scripts/turtlebot_node.py
+catkin_install_python(PROGRAMS nodes/turtlebot_node
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(DIRECTORY launch/
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+        PATTERN ".git" EXCLUDE)
 
 
