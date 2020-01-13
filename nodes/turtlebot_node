@@ -2,17 +2,17 @@
 
 import numpy as np
 
-from mushroom_ros.environments import TurtlebotGazebo
+from mushroom_rl_ros.environments import TurtlebotGazebo
 
-from mushroom.core import Core
-from mushroom.algorithms.policy_search import REINFORCE
-from mushroom.approximators.parametric import LinearApproximator
-from mushroom.approximators.regressor import Regressor
-from mushroom.features.features import Features
-from mushroom.features.tensors import gaussian_tensor
-from mushroom.policy import MultivariateGaussianPolicy
-from mushroom.utils.dataset import compute_J
-from mushroom.utils.parameters import AdaptiveParameter
+from mushroom_rl.core import Core
+from mushroom_rl.algorithms.policy_search import REINFORCE
+from mushroom_rl.approximators.parametric import LinearApproximator
+from mushroom_rl.approximators.regressor import Regressor
+from mushroom_rl.features.features import Features
+from mushroom_rl.features.tensors import gaussian_tensor
+from mushroom_rl.policy import GaussianPolicy
+from mushroom_rl.utils.dataset import compute_J
+from mushroom_rl.utils.parameters import AdaptiveParameter
 
 
 # Learning parameters
@@ -41,7 +41,7 @@ approximator = Regressor(LinearApproximator, input_shape=input_shape,
                          params=approximator_params)
 
 sigma = np.eye(2)*1e-1
-policy = MultivariateGaussianPolicy(mu=approximator, sigma=sigma)
+policy = GaussianPolicy(mu=approximator, sigma=sigma)
 
 
 # Agent
@@ -50,7 +50,7 @@ algorithm_params = dict(learning_rate=learning_rate)
 fit_params = dict()
 agent_params = {'algorithm_params': algorithm_params,
                 'fit_params': fit_params}
-agent = REINFORCE(policy, mdp.info, agent_params, phi)
+agent = REINFORCE(mdp.info, policy, agent_params, phi)
 
 # Train
 core = Core(agent, mdp)

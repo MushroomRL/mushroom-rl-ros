@@ -2,10 +2,10 @@ import numpy as np
 import tf
 import rospy
 
-from mushroom_ros import GazeboEnvironment
-from mushroom.environments import MDPInfo
-from mushroom.utils import spaces
-from mushroom.utils.angles_utils import normalize_angle
+from mushroom_rl_ros import GazeboEnvironment
+from mushroom_rl.environments import MDPInfo
+from mushroom_rl.utils import spaces
+from mushroom_rl.utils.angles_utils import normalize_angle
 
 from geometry_msgs.msg import Twist
 from gazebo_msgs.srv import GetModelState

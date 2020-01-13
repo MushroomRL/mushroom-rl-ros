@@ -1,5 +1,5 @@
 import rospy
-from mushroom.environments import Environment
+from mushroom_rl.environments import Environment
 
 
 class ROSEnvironment(Environment):
