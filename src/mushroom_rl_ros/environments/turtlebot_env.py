@@ -5,7 +5,7 @@ import rospy
 from mushroom_rl_ros import GazeboEnvironment
 from mushroom_rl.environments import MDPInfo
 from mushroom_rl.utils import spaces
-from mushroom_rl.utils.angles_utils import normalize_angle
+from mushroom_rl.utils.angles import normalize_angle
 
 from geometry_msgs.msg import Twist
 from gazebo_msgs.srv import GetModelState

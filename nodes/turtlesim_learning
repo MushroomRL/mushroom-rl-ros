@@ -2,18 +2,17 @@
 
 import numpy as np
 
-from mushroom_rl_ros.environments import TurtlebotGazebo
+from mushroom_rl_ros.environments import TurtleSim
 
 from mushroom_rl.core import Core
-from mushroom_rl.algorithms.policy_search import REINFORCE
+from mushroom_rl.algorithms.policy_search import RWR
 from mushroom_rl.approximators.parametric import LinearApproximator
 from mushroom_rl.approximators.regressor import Regressor
 from mushroom_rl.features.features import Features
-from mushroom_rl.features.tensors import gaussian_tensor
-from mushroom_rl.policy import GaussianPolicy
+from mushroom_rl.features.tiles import Tiles
+from mushroom_rl.policy import DeterministicPolicy
+from mushroom_rl.distributions import GaussianDiagonalDistribution
 from mushroom_rl.utils.dataset import compute_J
-from mushroom_rl.utils.parameters import AdaptiveParameter
-
 
 # Learning parameters
 n_runs = 4
@@ -21,17 +20,13 @@ n_iterations = 10
 ep_per_run = 3
 
 # Environment
-mdp = TurtlebotGazebo()
+mdp = TurtleSim()
 
 # Policy
-tensor_list = gaussian_tensor.generate([10, 10, 6],
-                                       [[-5.0, 5.0],
-                                        [-5.0, 5.0],
-                                        [-np.pi, np.pi]])
+tiles = Tiles.generate(3, [5]*3, mdp.info.observation_space.low,
+                       mdp.info.observation_space.high)
 
-phi = Features(tensor_list=tensor_list, name='phi',
-               input_dim=mdp.info.observation_space.shape[0])
-
+phi = Features(tilings=tiles)
 
 input_shape = (phi.size,)
 
@@ -40,17 +35,15 @@ approximator = Regressor(LinearApproximator, input_shape=input_shape,
                          output_shape=mdp.info.action_space.shape,
                          params=approximator_params)
 
-sigma = np.eye(2)*1e-1
-policy = GaussianPolicy(mu=approximator, sigma=sigma)
+policy = DeterministicPolicy(approximator)
 
+mu = np.zeros(policy.weights_size)
+std = 0.1*np.ones(policy.weights_size)
+dist = GaussianDiagonalDistribution(mu, std)
 
 # Agent
-learning_rate = AdaptiveParameter(value=5)
-algorithm_params = dict(learning_rate=learning_rate)
-fit_params = dict()
-agent_params = {'algorithm_params': algorithm_params,
-                'fit_params': fit_params}
-agent = REINFORCE(mdp.info, policy, agent_params, phi)
+beta = 1.0
+agent = RWR(mdp.info, dist, policy, beta, phi)
 
 # Train
 core = Core(agent, mdp)
@@ -68,6 +61,6 @@ for i in range(n_runs):
     dataset_eval = core.evaluate(n_episodes=ep_per_run)
     J = compute_J(dataset_eval, gamma=mdp.info.gamma)
     print('J at iteration ' + str(i) + ': ' + str(np.mean(J)))
-    
+
 mdp.stop()
 
