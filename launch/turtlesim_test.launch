@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
 <launch>
-  <node name="turtlesim_node" pkg="turtlesim" type="turtlesim_node" output="log"/>
-  <node name="turtlesim_learning" pkg="mushroom_rl_ros" type="turtlesim_learning" output="screen" />
+  <node name="turtlesim_node" pkg="turtlesim" type="turtlesim_node" />
+  <node name="turtlesim_learning" pkg="mushroom_rl_ros" type="turtlesim_learning" launch-prefix="xterm -hold -e" />
 </launch>

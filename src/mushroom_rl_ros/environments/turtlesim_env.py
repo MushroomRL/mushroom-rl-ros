@@ -8,6 +8,7 @@ from mushroom_rl.utils import spaces
 from geometry_msgs.msg import Twist
 from turtlesim.srv import TeleportAbsolute
 from turtlesim.msg import Pose
+from std_srvs.srv import Empty
 
 
 from tqdm import tqdm
@@ -34,7 +35,7 @@ class TurtleSim(ROSEnvironment):
 
         hz = 10.0
 
-        self._target = np.array([2.0, 2.0, 0.0])
+        self._target = np.array([5.0, 5.0])
         self._current_pose = np.zeros(3)
 
         super().__init__('turtlesim_env', mdp_info, hz, **kwargs)
@@ -45,16 +46,22 @@ class TurtleSim(ROSEnvironment):
         # subscribe to /turtle1/pose to get the turtle pose
         self._pose = rospy.Subscriber('/turtle1/pose', Pose, self._pose_callback)
 
-        # subscribe to the teleporting service to reset environment
+        # connect to the teleporting service to reset environment
         self._reset_service_name = '/turtle1/teleport_absolute'
         rospy.wait_for_service(self._reset_service_name)
         self._reset_service = rospy.ServiceProxy(self._reset_service_name, TeleportAbsolute)
+
+        # connect to the clear service to cleanup the traces
+        self._clear_service_name = '/clear'
+        rospy.wait_for_service(self._clear_service_name)
+        self._clear_service = rospy.ServiceProxy(self._clear_service_name, Empty)
 
     def start(self):
         initial_state = np.random.rand(3)
         initial_state *= self.info.observation_space.high
         rospy.wait_for_service(self._reset_service_name)
         self._reset_service(x=initial_state[0], y=initial_state[1], theta=initial_state[2])
+        self._clear_service()
 
     def stop(self):
         pass
@@ -70,11 +77,11 @@ class TurtleSim(ROSEnvironment):
         self._cmd.publish(msg)
 
     def get_reward(self, state, action, next_state, absorbing):
-        return -np.linalg.norm(self._target - next_state)
+        return -np.linalg.norm(self._target - next_state[:2])
 
     def get_state(self):
         state = self._current_pose.copy()
-        goal_reached = np.linalg.norm(self._target - state) < 0.1
+        goal_reached = np.linalg.norm(self._target - state[:2]) < 0.1
 
         return state, goal_reached
 

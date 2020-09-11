@@ -11,8 +11,9 @@ from mushroom_rl.approximators.regressor import Regressor
 from mushroom_rl.features.features import Features
 from mushroom_rl.features.tensors import gaussian_tensor
 from mushroom_rl.policy import GaussianPolicy
-from mushroom_rl.utils.dataset import compute_J
 from mushroom_rl.utils.parameters import AdaptiveParameter
+from mushroom_rl.utils.dataset import compute_J
+
 
 
 # Learning parameters
@@ -46,8 +47,6 @@ policy = GaussianPolicy(mu=approximator, sigma=sigma)
 
 # Agent
 learning_rate = AdaptiveParameter(value=5)
-algorithm_params = dict(learning_rate=learning_rate)
-fit_params = dict()
 agent = REINFORCE(mdp.info, policy, learning_rate, phi)
 
 # Train
