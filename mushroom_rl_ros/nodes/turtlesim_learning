@@ -11,7 +11,7 @@ from mushroom_rl.approximators.regressor import Regressor
 from mushroom_rl.features.features import Features
 from mushroom_rl.features.basis import GaussianRBF
 from mushroom_rl.policy import DiagonalGaussianPolicy
-from mushroom_rl.utils.parameters import AdaptiveParameter
+from mushroom_rl.utils.optimizers import AdaptiveOptimizer
 from mushroom_rl.utils.dataset import compute_J
 
 # Learning parameters
@@ -41,8 +41,8 @@ policy = DiagonalGaussianPolicy(mu=approximator, std=std)
 
 
 # Agent
-learning_rate = AdaptiveParameter(0.1)
-agent = GPOMDP(mdp.info, policy, learning_rate, phi)
+optimizer = AdaptiveOptimizer(0.1)
+agent = GPOMDP(mdp.info, policy, optimizer, phi)
 
 # Train
 core = Core(agent, mdp)
