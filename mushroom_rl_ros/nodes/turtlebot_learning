@@ -9,7 +9,7 @@ from mushroom_rl.algorithms.policy_search import REINFORCE
 from mushroom_rl.approximators.parametric import LinearApproximator
 from mushroom_rl.approximators.regressor import Regressor
 from mushroom_rl.features.features import Features
-from mushroom_rl.features.tensors import gaussian_tensor
+from mushroom_rl.features.tensors import GaussianRBFTensor
 from mushroom_rl.policy import GaussianPolicy
 from mushroom_rl.utils.optimizers import AdaptiveOptimizer
 from mushroom_rl.utils.dataset import compute_J
@@ -25,21 +25,17 @@ ep_per_run = 3
 mdp = TurtlebotGazebo()
 
 # Policy
-tensor_list = gaussian_tensor.generate([10, 10, 6],
-                                       [[-5.0, 5.0],
-                                        [-5.0, 5.0],
-                                        [-np.pi, np.pi]])
+tensor_list = GaussianRBFTensor.generate([10, 10, 6],
+                                         mdp.info.observation_space.low,
+                                         mdp.info.observation_space.high)
 
-phi = Features(tensor_list=tensor_list, name='phi',
-               input_dim=mdp.info.observation_space.shape[0])
+phi = Features(tensor_list=tensor_list)
 
 
-input_shape = (phi.size,)
+input_shape = (600,)
 
-approximator_params = dict(input_dim=phi.size)
 approximator = Regressor(LinearApproximator, input_shape=input_shape,
-                         output_shape=mdp.info.action_space.shape,
-                         params=approximator_params)
+                         output_shape=mdp.info.action_space.shape)
 
 sigma = np.eye(2)*1e-1
 policy = GaussianPolicy(mu=approximator, sigma=sigma)
