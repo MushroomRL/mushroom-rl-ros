@@ -2,7 +2,7 @@ import numpy as np
 import rospy
 
 from mushroom_rl_ros import ROSEnvironment
-from mushroom_rl.environments import MDPInfo
+from mushroom_rl.core import MDPInfo
 from mushroom_rl.utils import spaces
 
 from geometry_msgs.msg import Twist

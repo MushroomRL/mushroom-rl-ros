@@ -3,7 +3,7 @@ import tf
 import rospy
 
 from mushroom_rl_ros import GazeboEnvironment
-from mushroom_rl.environments import MDPInfo
+from mushroom_rl.core import MDPInfo
 from mushroom_rl.utils import spaces
 from mushroom_rl.utils.angles import normalize_angle
 
